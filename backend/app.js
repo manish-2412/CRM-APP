@@ -1,21 +1,25 @@
+// Import dependencies
+require('dotenv').config();
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
 
+// Initialize the app
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
-// Middleware to parse JSON and handle cross-origin requests
+// Middleware for parsing JSON and handling CORS
 app.use(express.json());
 app.use(cors());
 
-// Create a connection to the MySQL database
+// MySQL Database connection
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'root',
-  database: 'crm_campaign_db',
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 });
+
 
 // Test the MySQL database connection
 db.connect((err) => {
