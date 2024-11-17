@@ -1,7 +1,6 @@
 const express = require('express');
 const mysql = require('mysql2');
 const cors = require('cors');
-const amqp = require('amqplib');
 
 const app = express();
 const PORT = 3000;
@@ -17,19 +16,6 @@ const db = mysql.createConnection({
   password: 'root',
   database: 'crm_campaign_db',
 });
-
-// RabbitMQ setup for message queuing
-let channel, connection;
-
-async function connectToRabbitMQ() {
-  // Connect to RabbitMQ server and create a channel
-  connection = await amqp.connect('amqp://localhost');
-  channel = await connection.createChannel();
-  await channel.assertQueue('crm_queue');
-}
-
-// Initialize RabbitMQ connection
-connectToRabbitMQ().catch(console.error);
 
 // Test the MySQL database connection
 db.connect((err) => {
@@ -48,7 +34,6 @@ app.post('/addCustomer', (req, res) => {
     return res.status(400).json({ message: 'All fields are required' });
   }
 
-  // Insert new customer into the 'customers' table
   const query = `INSERT INTO customers (name, email, phone, total_spending, last_visit_date) VALUES (?, ?, ?, ?, ?)`;
 
   db.query(query, [name, email, phone, total_spending, last_visit_date], (err, result) => {
